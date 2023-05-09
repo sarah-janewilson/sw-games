@@ -40,3 +40,41 @@ describe("/api/categories", () => {
       });
   });
 });
+
+describe("/api/reviews/:review_id", () => {
+  test("GET /api/reviews/:review_id responds with status 200", () => {
+    return request(app).get("/api/reviews/1").expect(200);
+  });
+  test("Get /api/reviews/:review_id responds with an object with the required properties", () => {
+    return request(app)
+      .get("/api/reviews/1")
+      .expect(200)
+      .then((response) => {
+        expect(response.body).toHaveProperty("review_id");
+        expect(response.body).toHaveProperty("title");
+        expect(response.body).toHaveProperty("review_body");
+        expect(response.body).toHaveProperty("designer");
+        expect(response.body).toHaveProperty("review_img_url");
+        expect(response.body).toHaveProperty("votes");
+        expect(response.body).toHaveProperty("category");
+        expect(response.body).toHaveProperty("owner");
+        expect(response.body).toHaveProperty("created_at");
+      });
+  });
+  test("GET /api/reviews/:review_id responds with an object with properties which are of the correct data type", () => {
+    return request(app)
+      .get("/api/reviews/1")
+      .expect(200)
+      .then((response) => {
+        expect(typeof response.body.review_id).toBe("number");
+        expect(typeof response.body.title).toBe("string");
+        expect(typeof response.body.review_body).toBe("string");
+        expect(typeof response.body.designer).toBe("string");
+        expect(typeof response.body.review_img_url).toBe("string");
+        expect(typeof response.body.votes).toBe("number");
+        expect(typeof response.body.category).toBe("string");
+        expect(typeof response.body.owner).toBe("string");
+        expect(typeof response.body.created_at).toBe("string");
+      });
+  });
+});
