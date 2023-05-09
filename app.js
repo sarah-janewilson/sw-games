@@ -5,7 +5,7 @@ const { getAllCategories } = require("./db/controllers/categories.controller");
 
 app.get("/api/categories", getAllCategories);
 
-app.get("/api/*", (request, response, next) => {
+app.get("*", (request, response, next) => {
   response.status(404).send({ message: "Path Not Found" });
 });
 
