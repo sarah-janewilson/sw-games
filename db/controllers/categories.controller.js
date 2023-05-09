@@ -1,4 +1,5 @@
 const { fetchCategories } = require("../models/categories.model");
+const fs = require("fs");
 
 exports.getAllCategories = (request, response, next) => {
   fetchCategories()

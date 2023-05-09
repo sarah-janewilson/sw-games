@@ -1,6 +1,7 @@
 const app = require("../app.js");
 const request = require("supertest");
 const db = require("../db/connection.js");
+const fs = require("fs");
 
 const seed = require("../db/seeds/seed.js");
 const testData = require("../db/data/test-data");
@@ -39,4 +40,21 @@ describe("/api/categories", () => {
         });
       });
   });
+});
+
+describe("/api", () => {
+  test("GET request responds with status 200 and a JSON object", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .expect("Content-Type", "application/json; charset=utf-8");
+  });
+});
+test("GET request responds with accurate JSON object", () => {
+  return request(app)
+    .get("/api")
+    .expect(200)
+    .then((result) => {
+        expect(result.body).toEqual(JSON.parse(fs.readFileSync("./endpoints.json")))
+    })
 });
