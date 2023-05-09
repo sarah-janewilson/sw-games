@@ -28,4 +28,12 @@ describe("/api/categories", () => {
         });
       });
   });
+  test("GET request responds with status 404 and error message", () => {
+    return request(app)
+      .get("/api/nonsense")
+      .expect(404)
+      .then((result) => {
+        expect(result.body.message).toBe("Path Not Found");
+      });
+  });
 });
