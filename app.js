@@ -5,16 +5,15 @@ const { getAllCategories } = require("./db/controllers/categories.controller");
 const { readMeFunc } = require("./db/controllers/api.controller");
 const {
   getAllReviews,
-  getReview,
+  getReviewById,
 } = require("./db/controllers/reviews.controller");
+const { getAllCommentsByReviewId } = require("./db/controllers/comments.controller");
 
 app.get("/api/categories", getAllCategories);
-
 app.get("/api", readMeFunc);
-
 app.get("/api/reviews", getAllReviews);
-
-app.get("/api/reviews/:review_id", getReview);
+app.get("/api/reviews/:review_id", getReviewById);
+app.get("/api/reviews/:review_id/comments", getAllCommentsByReviewId);
 
 app.get("*", (request, response, next) => {
   response.status(404).send({ message: "Path Not Found" });
