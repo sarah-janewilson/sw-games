@@ -42,6 +42,77 @@ describe("/api/categories", () => {
   });
 });
 
+describe("/api/reviews/:review_id", () => {
+  test("GET /api/reviews/:review_id responds with status 200", () => {
+    return request(app).get("/api/reviews/1").expect(200);
+  });
+  test("Get /api/reviews/:review_id responds with an object with the required properties", () => {
+    return request(app)
+      .get("/api/reviews/1")
+      .expect(200)
+      .then((response) => {
+        expect(response.body).toHaveProperty("review_id");
+        expect(response.body).toHaveProperty("title");
+        expect(response.body).toHaveProperty("review_body");
+        expect(response.body).toHaveProperty("designer");
+        expect(response.body).toHaveProperty("review_img_url");
+        expect(response.body).toHaveProperty("votes");
+        expect(response.body).toHaveProperty("category");
+        expect(response.body).toHaveProperty("owner");
+        expect(response.body).toHaveProperty("created_at");
+      });
+  });
+  test("GET /api/reviews/:review_id responds with an object with properties which are of the correct data type", () => {
+    return request(app)
+      .get("/api/reviews/1")
+      .expect(200)
+      .then((response) => {
+        expect(typeof response.body.review_id).toBe("number");
+        expect(typeof response.body.title).toBe("string");
+        expect(typeof response.body.review_body).toBe("string");
+        expect(typeof response.body.designer).toBe("string");
+        expect(typeof response.body.review_img_url).toBe("string");
+        expect(typeof response.body.votes).toBe("number");
+        expect(typeof response.body.category).toBe("string");
+        expect(typeof response.body.owner).toBe("string");
+        expect(typeof response.body.created_at).toBe("string");
+      });
+  });
+  test("Get /api/reviews/:review_id responds with an object with the required properties", () => {
+    return request(app)
+      .get("/api/reviews/1")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.review_id).toBe(1);
+        expect(response.body.title).toBe("Agricola");
+        expect(response.body.review_body).toBe("Farmyard fun!");
+        expect(response.body.designer).toBe("Uwe Rosenberg");
+        expect(response.body.review_img_url).toBe(
+          "https://images.pexels.com/photos/974314/pexels-photo-974314.jpeg?w=700&h=700"
+        );
+        expect(response.body.votes).toBe(1);
+        expect(response.body.category).toBe("euro game");
+        expect(response.body.owner).toBe("mallionaire");
+        expect(response.body.created_at).toBe("2021-01-18T10:00:20.514Z");
+      });
+  });
+  test("GET /api/reviews responds with status 400 and error message if endpoint is an invalid review id", () => {
+    return request(app)
+      .get("/api/reviews/nonsense")
+      .expect(400)
+      .then((result) => {
+        expect(result.body.message).toBe("Invalid Review ID");
+      });
+  });
+  test("GET /api/reviews responds with status 404 and error message if endpoint is a valid but non-existent review id", () => {
+    return request(app)
+      .get("/api/reviews/30000")
+      .expect(404)
+      .then((result) => {
+        expect(result.body.message).toBe("Review Not Found");
+      });
+  });
+});
 describe("/api", () => {
   test("GET request responds with status 200 and a JSON object", () => {
     return request(app)
