@@ -13,8 +13,12 @@ app.get("*", (request, response) => {
 });
 
 app.use((err, request, response, next) => {
-  console.log(err);
-  response.status(500).send({ message: "Internal Server Error!" });
+  if (err.status && err.message) {
+    response.status(err.status).send({ message: err.message });
+  }
+  else if (err.code === '22P02') {
+    response.status(400).send({ message: 'Invalid Review ID' });
+  } else response.status(500).send({ message: 'Internal Server Error' });
 });
 
 module.exports = app;

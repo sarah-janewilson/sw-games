@@ -6,7 +6,7 @@ exports.fetchReview = (fetchedReview) => {
       fetchedReview.review_id,
     ])
     .then((response) => {
-      if (response.rows.length === 0) {
+      if (!response.rows.length) {
         return Promise.reject({ status: 404, message: "Review Not Found" });
       }
       return response.rows[0];
