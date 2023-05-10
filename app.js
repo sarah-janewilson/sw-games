@@ -8,7 +8,7 @@ app.get("/api/categories", getAllCategories);
 
 app.get("/api/reviews/:review_id", getReview);
 
-app.get("*", (request, response, next) => {
+app.get("*", (request, response) => {
   response.status(404).send({ message: "Path Not Found" });
 });
 
