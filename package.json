@@ -8,7 +8,8 @@
     "seed": "node ./db/seeds/run-seed.js",
     "test": "jest",
     "prepare": "husky install",
-    "playground": "psql -f ./playground.sql > playground.txt"
+    "playground": "psql -f ./playground.sql > playground.txt",
+    "dev": "NODE_ENV=test nodemon listen.js"
   },
   "repository": {
     "type": "git",
@@ -36,7 +37,8 @@
   },
   "jest": {
     "setupFilesAfterEnv": [
-      "jest-extended/all", "jest-sorted"
+      "jest-extended/all",
+      "jest-sorted"
     ]
   }
 }

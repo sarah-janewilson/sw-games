@@ -288,3 +288,53 @@ describe("/api/reviews/:review_id/comments", () => {
       });
   });
 });
+
+describe("POST /api/reviews/:review_id/comments", () => {
+  test("POST /api/reviews/1/comments accepts an object with properties of usename and body and responds with status 201 and a response body of the posted comment", () => {
+    return request(app)
+      .post("/api/reviews/1/comments")
+      .expect(201)
+      .send({
+        username: "bainesface",
+        body: "Great game for dogs like me",
+      })
+      .then((response) => {
+        expect(response.body.review_id).toBe(1);
+        expect(response.body.username).toBe("bainesface");
+        expect(response.body.body).toBe("Great game for dogs like me");
+      });
+  });
+  test("POST /api/reviews/1/comments responds with status 400 and error message when comment is missing both required fields", () => {
+    return request(app)
+      .post("/api/reviews/1/comments")
+      .expect(400)
+      .send({})
+      .then((response) => {
+        expect(response.body.message).toBe(
+          "Bad Request - Missing Required Fields"
+        );
+      });
+  });
+  test("POST /api/reviews/1/comments responds with status 400 and error message when comment is missing one of the required fields", () => {
+    return request(app)
+      .post("/api/reviews/1/comments")
+      .expect(400)
+      .send({ username: "bainesface" })
+      .then((response) => {
+        expect(response.body.message).toBe(
+          "Bad Request - Missing Required Fields"
+        );
+      });
+  });
+  test("POST /api/reviews/1/comments responds with status 400 and error message when comment is missing one of the required fields", () => {
+    return request(app)
+      .post("/api/reviews/1/comments")
+      .expect(400)
+      .send({ username: "", body: "I have left my name blank" })
+      .then((response) => {
+        expect(response.body.message).toBe(
+          "Bad Request - Missing Required Fields"
+        );
+      });
+  });
+});
