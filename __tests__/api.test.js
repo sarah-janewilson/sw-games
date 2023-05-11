@@ -344,7 +344,7 @@ describe("POST /api/reviews/:review_id/comments", () => {
         );
       });
   });
-  test("POST /api/reviews/1/comments responds with status 400 and error message when comment is missing one of the required fields", () => {
+  test("POST /api/reviews/1/comments responds with status 400 and error message when comment has both required fields but one is an empty string", () => {
     return request(app)
       .post("/api/reviews/1/comments")
       .expect(400)

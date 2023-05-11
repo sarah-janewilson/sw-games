@@ -17,16 +17,10 @@ exports.postNewComment = (request, response, next) => {
     return response
       .status(400)
       .send({ message: "Bad Request - Missing Required Fields" });
-  } else if (isNaN(reviewId)) {
-    return response.status(400).send({ message: "Invalid Review ID" });
   }
   createComment(username, body, reviewId)
     .then((createdComment) => {
-      if (createdComment.error) {
-        response.status(404).send({ message: "Review Not Found" });
-      } else {
-        response.status(201).send(createdComment);
-      }
+      response.status(201).send(createdComment);
     })
     .catch(next);
 };

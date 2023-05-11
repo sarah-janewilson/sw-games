@@ -26,7 +26,4 @@ exports.createComment = (username, body, reviewId) => {
     .then((response) => {
       return response.rows[0];
     })
-    .catch((err) => {
-      return({ error: err.code })
-    });
 };
