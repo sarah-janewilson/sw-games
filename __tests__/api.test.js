@@ -271,6 +271,14 @@ describe("/api/reviews/:review_id/comments", () => {
         expect(result.body.message).toBe("Path Not Found");
       });
   });
+  test("GET request responds with status 404 and error message if no comments exist on that review ID", () => {
+    return request(app)
+      .get("/api/reviews/1/comments")
+      .expect(404)
+      .then((result) => {
+        expect(result.body.message).toBe("Path Not Found");
+      });
+  });
   test("GET request responds with status 400 and error message if review_id is invalid", () => {
     return request(app)
       .get("/api/reviews/nonsense/comments")
