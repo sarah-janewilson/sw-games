@@ -1,7 +1,0 @@
-You are now connected to database "nc_games_test" as user "dev".
- comment_id |    body     | review_id |   author    | votes |         created_at         
-------------+-------------+-----------+-------------+-------+----------------------------
-         11 | Lovely game |         1 | mallionaire |     0 | 2023-05-11 11:29:57.382239
-(1 row)
-
-INSERT 0 1

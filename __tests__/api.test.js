@@ -300,8 +300,26 @@ describe("POST /api/reviews/:review_id/comments", () => {
       })
       .then((response) => {
         expect(response.body.review_id).toBe(1);
-        expect(response.body.username).toBe("bainesface");
+        expect(response.body.author).toBe("bainesface");
         expect(response.body.body).toBe("Great game for dogs like me");
+      });
+  });
+  test("POST /api/reviews/1/comments accepts an object with properties of usename, body and extra properties and responds with status 201 and a response body of the posted comment, ignoring extra properties", () => {
+    return request(app)
+      .post("/api/reviews/2/comments")
+      .expect(201)
+      .send({
+        username: "bainesface",
+        extraPropOne: "I have made an extra property",
+        body: "Great game for dogs like me",
+        extraPropTwo: "I have made another extra property",
+      })
+      .then((response) => {
+        expect(response.body.review_id).toBe(2);
+        expect(response.body.author).toBe("bainesface");
+        expect(response.body.body).toBe("Great game for dogs like me");
+        expect(response.body).not.toHaveProperty("extraPropOne");
+        expect(response.body).not.toHaveProperty("extraPropTwo");
       });
   });
   test("POST /api/reviews/1/comments responds with status 400 and error message when comment is missing both required fields", () => {
@@ -335,6 +353,30 @@ describe("POST /api/reviews/:review_id/comments", () => {
         expect(response.body.message).toBe(
           "Bad Request - Missing Required Fields"
         );
+      });
+  });
+  test("POST /api/reviews/review_id/comments responds with status 400 and error message if endpoint is an invalid review id", () => {
+    return request(app)
+      .post("/api/reviews/nonsense/comments")
+      .expect(400)
+      .send({
+        username: "bainesface",
+        body: "Great game for dogs like me",
+      })
+      .then((result) => {
+        expect(result.body.message).toBe("Invalid Review ID");
+      });
+  });
+  test("POST /api/reviews/:review_id/comments responds with status 404 and error message if endpoint is a valid but non-existent review id", () => {
+    return request(app)
+      .post("/api/reviews/30000/comments")
+      .expect(404)
+      .send({
+        username: "bainesface",
+        body: "Great game for dogs like me",
+      })
+      .then((result) => {
+        expect(result.body.message).toBe("Review Not Found");
       });
   });
 });

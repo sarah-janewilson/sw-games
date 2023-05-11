@@ -1,4 +1,5 @@
 const db = require("../../db/connection");
+const { getReviewById } = require("../controllers/reviews.controller");
 
 exports.fetchCommentsByReviewId = (fetchedComments) => {
   return db
@@ -22,10 +23,10 @@ exports.createComment = (username, body, reviewId) => {
       RETURNING*;`,
       [reviewId, username, body]
     )
-    .then((result) => {
-      const comment = { ...result.rows[0] };
-      delete comment.author;
-      comment.username = result.rows[0].author;
-      return comment;
+    .then((response) => {
+      return response.rows[0];
+    })
+    .catch((err) => {
+      return({ error: err.code })
     });
 };
