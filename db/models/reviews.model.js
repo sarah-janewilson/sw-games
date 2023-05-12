@@ -22,3 +22,20 @@ exports.fetchReviewById = (fetchedReview) => {
       return response.rows[0];
     });
 };
+
+exports.patchVotesByReviewId = (incVotes, reviewId) => {
+  return db
+    .query(
+      `UPDATE reviews
+  SET votes = votes + $1
+  WHERE review_id = $2
+  RETURNING *;`,
+      [incVotes, reviewId]
+    )
+    .then((response) => {
+      if (!response.rows[0]) {
+        return Promise.reject({ status: 404, message: "Review Not Found" });
+      }
+      return response.rows[0];
+    });
+};
