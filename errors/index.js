@@ -13,5 +13,5 @@ exports.handlePsqlErrors = (err, request, response, next) => {
 };
 
 exports.handleServerErrors = (err, request, response, next) => {
-  response.status(500).send({ message: "Internal Server Error TEST" });
+  response.status(500).send({ message: "Internal Server Error" });
 };
