@@ -1,7 +1,0 @@
-You are now connected to database "nc_games_test" as user "dev".
-      owner      |       title       | review_id |     category     |                                 review_img_url                                 |       created_at        | votes |   designer   | comment_count 
------------------+-------------------+-----------+------------------+--------------------------------------------------------------------------------+-------------------------+-------+--------------+---------------
- philippaclaire9 | Jenga             |         2 | dexterity        | https://images.pexels.com/photos/4473494/pexels-photo-4473494.jpeg?w=700&h=700 | 2021-01-18 10:01:41.251 |     5 | Leslie Scott |             3
- bainesface      | Ultimate Werewolf |         3 | social deduction | https://images.pexels.com/photos/5350049/pexels-photo-5350049.jpeg?w=700&h=700 | 2021-01-18 10:01:41.251 |     5 | Akihisa Okui |             3
-(2 rows)
-

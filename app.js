@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+app.use(express.json());
 
 const { getAllCategories } = require("./db/controllers/categories.controller");
 const { readMeFunc } = require("./db/controllers/api.controller");
@@ -7,13 +8,19 @@ const {
   getAllReviews,
   getReviewById,
 } = require("./db/controllers/reviews.controller");
-const { getAllCommentsByReviewId } = require("./db/controllers/comments.controller");
+const {
+  getAllCommentsByReviewId,
+  postNewComment,
+} = require("./db/controllers/comments.controller");
 
 app.get("/api/categories", getAllCategories);
 app.get("/api", readMeFunc);
 app.get("/api/reviews", getAllReviews);
 app.get("/api/reviews/:review_id", getReviewById);
 app.get("/api/reviews/:review_id/comments", getAllCommentsByReviewId);
+app.post("/api/reviews/:review_id/comments", (request, response, next) => {
+  postNewComment(request, response, next);
+});
 
 app.get("*", (request, response, next) => {
   response.status(404).send({ message: "Path Not Found" });
@@ -24,6 +31,8 @@ app.use((err, request, response, next) => {
     response.status(err.status).send({ message: err.message });
   } else if (err.code === "22P02") {
     response.status(400).send({ message: "Invalid Review ID" });
+  } else if (err.code === "23503") {
+    response.status(404).send({ message: "Review Not Found" });
   } else response.status(500).send({ message: "Internal Server Error" });
 });
 
