@@ -20,7 +20,7 @@ describe("app error testing", () => {
   });
 });
 
-describe("/api", () => {
+describe("GET /api", () => {
   test("GET request responds with status 200 and a JSON object", () => {
     return request(app)
       .get("/api")
@@ -39,7 +39,7 @@ describe("/api", () => {
   });
 });
 
-describe("/api/categories", () => {
+describe("GET /api/categories", () => {
   test("GET request responds with status 200 and an array of category objects", () => {
     return request(app)
       .get("/api/categories")
@@ -61,7 +61,7 @@ describe("/api/categories", () => {
   });
 });
 
-describe("/api/reviews", () => {
+describe("GET /api/reviews", () => {
   test("GET /api/reviews responds with status 200 and an array of review objects", () => {
     return request(app)
       .get("/api/reviews")
@@ -303,7 +303,7 @@ describe("/api/reviews/:review_id", () => {
   });
 });
 
-describe("/api/reviews/:review_id/comments", () => {
+describe("GET /api/reviews/:review_id/comments", () => {
   test("GET request responds with status 200 and an array of comment objects", () => {
     return request(app)
       .get("/api/reviews/3/comments")
@@ -381,6 +381,50 @@ describe("/api/reviews/:review_id/comments", () => {
       .expect(400)
       .then((result) => {
         expect(result.body.message).toBe("Bad Request");
+      });
+  });
+});
+
+describe("GET /api/users", () => {
+  test("GET /api/users responds with status 200 and an array of user objects", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then((result) => {
+        expect(Array.isArray(result.body)).toBe(true);
+        expect(result.body.length).toBe(4);
+      });
+  });
+  test("GET /api/users responds with an array of user objects with the required properties", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then((result) => {
+        result.body.forEach((user) => {
+          expect(user).toHaveProperty("username");
+          expect(user).toHaveProperty("name");
+          expect(user).toHaveProperty("avatar_url");
+        });
+      });
+  });
+  test("GET /api/users responds with an array of review objects with properties which are of the correct data type", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then((result) => {
+        result.body.forEach((review) => {
+          expect(typeof review.username).toBe("string");
+          expect(typeof review.name).toBe("string");
+          expect(typeof review.avatar_url).toBe("string");
+        });
+      });
+  });
+  test("GET /api/users responds with status 404 and error message if endpoint is incorrect", () => {
+    return request(app)
+      .get("/api/usersssa")
+      .expect(404)
+      .then((result) => {
+        expect(result.body.message).toBe("Path Not Found");
       });
   });
 });

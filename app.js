@@ -18,12 +18,14 @@ const {
   getAllCommentsByReviewId,
   postNewComment,
 } = require("./db/controllers/comments.controller");
+const { getAllUsers } = require("./db/controllers/users.controller.js");
 
 app.get("/api/categories", getAllCategories);
 app.get("/api", readMeFunc);
 app.get("/api/reviews", getAllReviews);
 app.get("/api/reviews/:review_id", getReviewById);
 app.get("/api/reviews/:review_id/comments", getAllCommentsByReviewId);
+app.get("/api/users", getAllUsers);
 
 app.post("/api/reviews/:review_id/comments", (request, response, next) => {
   postNewComment(request, response, next);
