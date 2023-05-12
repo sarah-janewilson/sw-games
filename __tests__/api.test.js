@@ -135,7 +135,103 @@ describe("GET /api/reviews", () => {
   });
 });
 
-describe("GET /api/reviews/:review_id", () => {
+describe("GET /api/reviews QUERIES", () => {
+  test("GET /api/reviews responds with status 200 and an array of all review objects filtered by category specified in the query", () => {
+    return request(app)
+      .get("/api/reviews?category=dexterity")
+      .expect(200)
+      .then((result) => {
+        expect(Array.isArray(result.body)).toBe(true);
+        expect(result.body.length).toBe(1);
+        result.body.forEach((review) => {
+          expect(review.category).toBe("dexterity");
+        });
+      });
+  });
+  test("GET /api/reviews responds with status 200 and an array of all review objects when category query is left blank", () => {
+    return request(app)
+      .get("/api/reviews?category=")
+      .expect(200)
+      .then((result) => {
+        expect(Array.isArray(result.body)).toBe(true);
+        expect(result.body.length).toBe(13);
+      });
+  });
+  test("GET /api/reviews responds with status 200 and an array of review object sorted by any valid column, defaulting to descending order", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=votes")
+      .expect(200)
+      .then((result) => {
+        expect(result.body).toBeSortedBy("votes", { descending: true });
+      });
+  });
+  test("GET /api/reviews responds with status 200 and an array of review object sorted by default as date, and can be in ascending order if specified", () => {
+    return request(app)
+      .get("/api/reviews?order=asc")
+      .expect(200)
+      .then((result) => {
+        expect(result.body).toBeSortedBy("created_at", { ascending: true });
+      });
+  });
+  test("GET /api/reviews responds with status 200 and an array of review object sorted by any valid column, and can be in ascending order if specified", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=designer&order=asc")
+      .expect(200)
+      .then((result) => {
+        expect(result.body).toBeSortedBy("designer", { ascending: true });
+      });
+  });
+  test("GET /api/reviews responds with status 400 and an error message when trying to sort by an invalid column", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=review_id")
+      .expect(400)
+      .then((result) => {
+        expect(result.body.message).toBe("Invalid Sort Query");
+      });
+  });
+  test("GET /api/reviews responds with status 400 and an error message when trying to order by an invalid value", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=designer&order=alphabetical")
+      .expect(400)
+      .then((result) => {
+        expect(result.body.message).toBe("Invalid Order Query");
+      });
+  });
+  test("GET /api/reviews responds with status 400 and an error message when SQL injection is attempted with a sort_by query", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=designer; DROP TABLE reviews;")
+      .expect(400)
+      .then((result) => {
+        expect(result.body.message).toBe("Invalid Sort Query");
+      });
+  });
+  test("GET /api/reviews responds with status 400 and an error message when SQL injection is attempted with an order_by query", () => {
+    return request(app)
+      .get("/api/reviews?order=ASC; DROP TABLE reviews;")
+      .expect(400)
+      .then((result) => {
+        expect(result.body.message).toBe("Invalid Order Query");
+      });
+  });
+  test("GET /api/reviews responds with status 200 and carries out query, ignoring and preventing the SQL injection that is attempted with a category query", () => {
+    return request(app)
+      .get("/api/reviews?category=dexterity; DROP TABLE reviews;")
+      .expect(404)
+      .then((result) => {
+        expect(result.body.message).toBe("Category Not Found");
+        });
+      });
+  test("GET /api/reviews responds with status 404 and an empty array when passed a category which is not valid", () => {
+    return request(app)
+      .get("/api/reviews?category=nonsense")
+      .expect(404)
+      .then((result) => {
+        expect(result.body.message).toBe("Category Not Found");
+      });
+  });
+});
+
+describe("/api/reviews/:review_id", () => {
   test("GET /api/reviews/:review_id responds with status 200", () => {
     return request(app).get("/api/reviews/1").expect(200);
   });
