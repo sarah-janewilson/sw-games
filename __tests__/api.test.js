@@ -651,3 +651,38 @@ describe("PATCH /api/reviews/:review_id", () => {
       });
   });
 });
+
+describe("DELETE /api/comments/:comment_id", () => {
+  test("DELETE /api/comments/:comment_id responds with status 204", () => {
+    return request(app).delete("/api/comments/2").expect(204);
+  });
+  describe("DELETE /api/comments/:comment_id", () => {
+    test("DELETE /api/comments/:comment_id responds with status 404 and error message when deleting a comment that has already been deleted", () => {
+      return request(app)
+        .delete("/api/comments/2")
+        .expect(204)
+        .then(() => {
+          return request(app).delete("/api/comments/2").expect(404);
+        })
+        .then((result) => {
+          expect(result.body.message).toBe("Not Found");
+        });
+    });
+    test("DELETE /api/comments/:comment_id responds with status 400 and error message if endpoint is an invalid review id", () => {
+      return request(app)
+        .delete("/api/comments/nonsense")
+        .expect(400)
+        .then((result) => {
+          expect(result.body.message).toBe("Bad Request");
+        });
+    });
+    test("DELETE /api/comments/:comment_id responds with status 404 and error message if endpoint is a valid but non-existent review id", () => {
+      return request(app)
+        .delete("/api/comments/3444222")
+        .expect(404)
+        .then((result) => {
+          expect(result.body.message).toBe("Not Found");
+        });
+    });
+  });
+});

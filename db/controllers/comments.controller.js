@@ -1,4 +1,4 @@
-const { createComment } = require("../models/comments.model");
+const { createComment, removeComment } = require("../models/comments.model");
 const { fetchCommentsByReviewId } = require("../models/comments.model");
 
 exports.getAllCommentsByReviewId = (request, response, next) => {
@@ -21,6 +21,18 @@ exports.postNewComment = (request, response, next) => {
   createComment(username, body, reviewId)
     .then((createdComment) => {
       response.status(201).send(createdComment);
+    })
+    .catch(next);
+};
+
+exports.deleteCommentById = (request, response, next) => {
+  const commentToDelete = request.params.comment_id;
+  removeComment(commentToDelete)
+    .then((deleteComment) => {
+      if (!deleteComment) {
+        return response.status(404).send({ message: "Not Found" });
+      }
+      response.status(204).send(deleteComment);
     })
     .catch(next);
 };

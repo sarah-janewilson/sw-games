@@ -25,5 +25,18 @@ exports.createComment = (username, body, reviewId) => {
     )
     .then((response) => {
       return response.rows[0];
-    })
+    });
+};
+
+exports.removeComment = (deleteComment) => {
+  return db
+    .query(
+      `DELETE FROM comments
+  WHERE comment_id = $1
+  RETURNING *;`,
+      [deleteComment]
+    )
+    .then((response) => {
+      return response.rows[0];
+    });
 };

@@ -17,6 +17,7 @@ const {
 const {
   getAllCommentsByReviewId,
   postNewComment,
+  deleteCommentById,
 } = require("./db/controllers/comments.controller");
 const { getAllUsers } = require("./db/controllers/users.controller.js");
 
@@ -34,6 +35,8 @@ app.post("/api/reviews/:review_id/comments", (request, response, next) => {
 app.patch("/api/reviews/:review_id", (request, response, next) => {
   updateVotesByReviewId(request, response, next);
 });
+
+app.delete("/api/comments/:comment_id", deleteCommentById);
 
 app.get("*", (request, response, next) => {
   response.status(404).send({ message: "Path Not Found" });
