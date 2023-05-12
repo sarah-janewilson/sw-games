@@ -380,3 +380,134 @@ describe("POST /api/reviews/:review_id/comments", () => {
       });
   });
 });
+
+describe("PATCH /api/reviews/:review_id", () => {
+  test("PATCH /api/reviews/:review_id responds with status 200 and updated review object when passed an object to update votes", () => {
+    return request(app)
+      .patch("/api/reviews/1")
+      .expect(200)
+      .send({
+        inc_votes: 50,
+      })
+      .then((result) => {
+        expect(result.body.review_id).toBe(1);
+        expect(result.body.title).toBe("Agricola");
+        expect(result.body.review_body).toBe("Farmyard fun!");
+        expect(result.body.designer).toBe("Uwe Rosenberg");
+        expect(result.body.review_img_url).toBe(
+          "https://images.pexels.com/photos/974314/pexels-photo-974314.jpeg?w=700&h=700"
+        );
+        expect(result.body.votes).toBe(51);
+        expect(result.body.category).toBe("euro game");
+        expect(result.body.owner).toBe("mallionaire");
+        expect(result.body.created_at).toBe("2021-01-18T10:00:20.514Z");
+      });
+  });
+  test("PATCH /api/reviews/:review_id respond with status 200 and updated review object when passed an object to decrease votes", () => {
+    return request(app)
+      .patch("/api/reviews/2")
+      .expect(200)
+      .send({
+        inc_votes: -50,
+      })
+      .then((result) => {
+        expect(result.body.review_id).toBe(2);
+        expect(result.body.title).toBe("Jenga");
+        expect(result.body.review_body).toBe("Fiddly fun for all the family");
+        expect(result.body.designer).toBe("Leslie Scott");
+        expect(result.body.review_img_url).toBe(
+          "https://images.pexels.com/photos/4473494/pexels-photo-4473494.jpeg?w=700&h=700"
+        );
+        expect(result.body.votes).toBe(-45);
+        expect(result.body.category).toBe("dexterity");
+        expect(result.body.owner).toBe("philippaclaire9");
+        expect(result.body.created_at).toBe("2021-01-18T10:01:41.251Z");
+      });
+  });
+  test("PATCH /api/reviews/:review_id responds with status 200 and updated review object with the same vote count when passed an object with value of 0", () => {
+    return request(app)
+      .patch("/api/reviews/3")
+      .expect(200)
+      .send({
+        inc_votes: 0,
+      })
+      .then((result) => {
+        expect(result.body.review_id).toBe(3);
+        expect(result.body.title).toBe("Ultimate Werewolf");
+        expect(result.body.review_body).toBe("We couldn't find the werewolf!");
+        expect(result.body.designer).toBe("Akihisa Okui");
+        expect(result.body.review_img_url).toBe(
+          "https://images.pexels.com/photos/5350049/pexels-photo-5350049.jpeg?w=700&h=700"
+        );
+        expect(result.body.votes).toBe(5);
+        expect(result.body.category).toBe("social deduction");
+        expect(result.body.owner).toBe("bainesface");
+        expect(result.body.created_at).toBe("2021-01-18T10:01:41.251Z");
+      });
+  });
+  test("PATCH /api/reviews/:review_id responds with status 200 and a response body of the updated review object, ignoring extra properties if passed them", () => {
+    return request(app)
+      .patch("/api/reviews/2/")
+      .expect(200)
+      .send({
+        inc_votes: 10,
+        extraProperty: 75
+      })
+      .then((result) => {
+        expect(result.body.review_id).toBe(2);
+        expect(result.body.title).toBe("Jenga");
+        expect(result.body.review_body).toBe("Fiddly fun for all the family");
+        expect(result.body.designer).toBe("Leslie Scott");
+        expect(result.body.review_img_url).toBe(
+          "https://images.pexels.com/photos/4473494/pexels-photo-4473494.jpeg?w=700&h=700"
+        );
+        expect(result.body.votes).toBe(15);
+        expect(result.body.category).toBe("dexterity");
+        expect(result.body.owner).toBe("philippaclaire9");
+        expect(result.body.created_at).toBe("2021-01-18T10:01:41.251Z");
+        expect(result.body).not.toHaveProperty("extraProperty")
+      });
+  });
+  test("PATCH /api/reviews/:review_id respond with status 400 and error message when passed an empty object", () => {
+    return request(app)
+      .patch("/api/reviews/1")
+      .expect(400)
+      .send({})
+      .then((result) => {
+        expect(result.body.message).toBe("Bad Request");
+      });
+  });
+  test("PATCH /api/reviews/:review_id respond with status 400 and error message when passed an object with a value that is not a number", () => {
+    return request(app)
+      .patch("/api/reviews/1")
+      .expect(400)
+      .send({
+        inc_votes: "I vote for this"
+      })
+      .then((result) => {
+        expect(result.body.message).toBe("Bad Request");
+      });
+  });
+  test("PATCH /api/reviews/:review_id responds with status 400 and error message if endpoint is an invalid review id", () => {
+    return request(app)
+      .patch("/api/reviews/nonsense")
+      .expect(400)
+      .send({
+        inc_votes: 4
+      })
+      .then((result) => {
+        expect(result.body.message).toBe("Bad Request");
+      });
+  });
+  test("PATCH /api/reviews/:review_id responds with status 404 and error message if endpoint is a valid but non-existent review id", () => {
+    return request(app)
+      .patch("/api/reviews/30000")
+      .expect(404)
+      .send({
+        inc_votes: 100
+      })
+      .then((result) => {
+        expect(result.body.message).toBe("Review Not Found");
+      });
+  });
+});
