@@ -451,7 +451,7 @@ describe("PATCH /api/reviews/:review_id", () => {
       .expect(200)
       .send({
         inc_votes: 10,
-        extraProperty: 75
+        extraProperty: 75,
       })
       .then((result) => {
         expect(result.body.review_id).toBe(2);
@@ -465,7 +465,7 @@ describe("PATCH /api/reviews/:review_id", () => {
         expect(result.body.category).toBe("dexterity");
         expect(result.body.owner).toBe("philippaclaire9");
         expect(result.body.created_at).toBe("2021-01-18T10:01:41.251Z");
-        expect(result.body).not.toHaveProperty("extraProperty")
+        expect(result.body).not.toHaveProperty("extraProperty");
       });
   });
   test("PATCH /api/reviews/:review_id respond with status 400 and error message when passed an empty object", () => {
@@ -482,7 +482,7 @@ describe("PATCH /api/reviews/:review_id", () => {
       .patch("/api/reviews/1")
       .expect(400)
       .send({
-        inc_votes: "I vote for this"
+        inc_votes: "I vote for this",
       })
       .then((result) => {
         expect(result.body.message).toBe("Bad Request");
@@ -493,7 +493,7 @@ describe("PATCH /api/reviews/:review_id", () => {
       .patch("/api/reviews/nonsense")
       .expect(400)
       .send({
-        inc_votes: 4
+        inc_votes: 4,
       })
       .then((result) => {
         expect(result.body.message).toBe("Bad Request");
@@ -504,10 +504,45 @@ describe("PATCH /api/reviews/:review_id", () => {
       .patch("/api/reviews/30000")
       .expect(404)
       .send({
-        inc_votes: 100
+        inc_votes: 100,
       })
       .then((result) => {
         expect(result.body.message).toBe("Review Not Found");
       });
+  });
+});
+
+describe("DELETE /api/comments/:comment_id", () => {
+  test("DELETE /api/comments/:comment_id responds with status 204", () => {
+    return request(app).delete("/api/comments/2").expect(204);
+  });
+  describe("DELETE /api/comments/:comment_id", () => {
+    test("DELETE /api/comments/:comment_id responds with status 404 and error message when deleting a comment that has already been deleted", () => {
+      return request(app)
+        .delete("/api/comments/2")
+        .expect(204)
+        .then(() => {
+          return request(app).delete("/api/comments/2").expect(404);
+        })
+        .then((result) => {
+          expect(result.body.message).toBe("Not Found");
+        });
+    });
+    test("DELETE /api/comments/:comment_id responds with status 400 and error message if endpoint is an invalid review id", () => {
+      return request(app)
+        .delete("/api/comments/nonsense")
+        .expect(400)
+        .then((result) => {
+          expect(result.body.message).toBe("Bad Request");
+        });
+    });
+    test("DELETE /api/comments/:comment_id responds with status 404 and error message if endpoint is a valid but non-existent review id", () => {
+      return request(app)
+        .delete("/api/comments/3444222")
+        .expect(404)
+        .then((result) => {
+          expect(result.body.message).toBe("Not Found");
+        });
+    });
   });
 });
