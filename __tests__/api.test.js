@@ -20,7 +20,7 @@ describe("app error testing", () => {
   });
 });
 
-describe("/api", () => {
+describe("GET /api", () => {
   test("GET request responds with status 200 and a JSON object", () => {
     return request(app)
       .get("/api")
@@ -39,7 +39,7 @@ describe("/api", () => {
   });
 });
 
-describe("/api/categories", () => {
+describe("GET /api/categories", () => {
   test("GET request responds with status 200 and an array of category objects", () => {
     return request(app)
       .get("/api/categories")
@@ -61,7 +61,7 @@ describe("/api/categories", () => {
   });
 });
 
-describe("/api/reviews", () => {
+describe("GET /api/reviews", () => {
   test("GET /api/reviews responds with status 200 and an array of review objects", () => {
     return request(app)
       .get("/api/reviews")
@@ -135,7 +135,7 @@ describe("/api/reviews", () => {
   });
 });
 
-describe("/api/reviews/:review_id", () => {
+describe("GET /api/reviews/:review_id", () => {
   test("GET /api/reviews/:review_id responds with status 200", () => {
     return request(app).get("/api/reviews/1").expect(200);
   });
@@ -207,7 +207,7 @@ describe("/api/reviews/:review_id", () => {
   });
 });
 
-describe("/api/reviews/:review_id/comments", () => {
+describe("GET /api/reviews/:review_id/comments", () => {
   test("GET request responds with status 200 and an array of comment objects", () => {
     return request(app)
       .get("/api/reviews/3/comments")
@@ -285,6 +285,50 @@ describe("/api/reviews/:review_id/comments", () => {
       .expect(400)
       .then((result) => {
         expect(result.body.message).toBe("Bad Request");
+      });
+  });
+});
+
+describe("GET /api/users", () => {
+  test("GET /api/users responds with status 200 and an array of user objects", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then((result) => {
+        expect(Array.isArray(result.body)).toBe(true);
+        expect(result.body.length).toBe(4);
+      });
+  });
+  test("GET /api/users responds with an array of user objects with the required properties", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then((result) => {
+        result.body.forEach((user) => {
+          expect(user).toHaveProperty("username");
+          expect(user).toHaveProperty("name");
+          expect(user).toHaveProperty("avatar_url");
+        });
+      });
+  });
+  test("GET /api/users responds with an array of review objects with properties which are of the correct data type", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then((result) => {
+        result.body.forEach((review) => {
+          expect(typeof review.username).toBe("string");
+          expect(typeof review.name).toBe("string");
+          expect(typeof review.avatar_url).toBe("string");
+        });
+      });
+  });
+  test("GET /api/users responds with status 404 and error message if endpoint is incorrect", () => {
+    return request(app)
+      .get("/api/usersssa")
+      .expect(404)
+      .then((result) => {
+        expect(result.body.message).toBe("Path Not Found");
       });
   });
 });
@@ -451,7 +495,7 @@ describe("PATCH /api/reviews/:review_id", () => {
       .expect(200)
       .send({
         inc_votes: 10,
-        extraProperty: 75
+        extraProperty: 75,
       })
       .then((result) => {
         expect(result.body.review_id).toBe(2);
@@ -465,7 +509,7 @@ describe("PATCH /api/reviews/:review_id", () => {
         expect(result.body.category).toBe("dexterity");
         expect(result.body.owner).toBe("philippaclaire9");
         expect(result.body.created_at).toBe("2021-01-18T10:01:41.251Z");
-        expect(result.body).not.toHaveProperty("extraProperty")
+        expect(result.body).not.toHaveProperty("extraProperty");
       });
   });
   test("PATCH /api/reviews/:review_id respond with status 400 and error message when passed an empty object", () => {
@@ -482,7 +526,7 @@ describe("PATCH /api/reviews/:review_id", () => {
       .patch("/api/reviews/1")
       .expect(400)
       .send({
-        inc_votes: "I vote for this"
+        inc_votes: "I vote for this",
       })
       .then((result) => {
         expect(result.body.message).toBe("Bad Request");
@@ -493,7 +537,7 @@ describe("PATCH /api/reviews/:review_id", () => {
       .patch("/api/reviews/nonsense")
       .expect(400)
       .send({
-        inc_votes: 4
+        inc_votes: 4,
       })
       .then((result) => {
         expect(result.body.message).toBe("Bad Request");
@@ -504,7 +548,7 @@ describe("PATCH /api/reviews/:review_id", () => {
       .patch("/api/reviews/30000")
       .expect(404)
       .send({
-        inc_votes: 100
+        inc_votes: 100,
       })
       .then((result) => {
         expect(result.body.message).toBe("Review Not Found");
