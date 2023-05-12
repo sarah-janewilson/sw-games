@@ -194,7 +194,7 @@ describe("/api/reviews/:review_id", () => {
       .get("/api/reviews/nonsense")
       .expect(400)
       .then((result) => {
-        expect(result.body.message).toBe("Invalid Review ID");
+        expect(result.body.message).toBe("Bad Request");
       });
   });
   test("GET /api/reviews/:review_id responds with status 404 and error message if endpoint is a valid but non-existent review id", () => {
@@ -284,7 +284,7 @@ describe("/api/reviews/:review_id/comments", () => {
       .get("/api/reviews/nonsense/comments")
       .expect(400)
       .then((result) => {
-        expect(result.body.message).toBe("Invalid Review ID");
+        expect(result.body.message).toBe("Bad Request");
       });
   });
 });
@@ -364,7 +364,7 @@ describe("POST /api/reviews/:review_id/comments", () => {
         body: "Great game for dogs like me",
       })
       .then((result) => {
-        expect(result.body.message).toBe("Invalid Review ID");
+        expect(result.body.message).toBe("Bad Request");
       });
   });
   test("POST /api/reviews/:review_id/comments responds with status 404 and error message if endpoint is a valid but non-existent review id", () => {

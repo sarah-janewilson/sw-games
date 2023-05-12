@@ -30,7 +30,7 @@ app.use((err, request, response, next) => {
   if (err.status && err.message) {
     response.status(err.status).send({ message: err.message });
   } else if (err.code === "22P02") {
-    response.status(400).send({ message: "Invalid Review ID" });
+    response.status(400).send({ message: "Bad Request" });
   } else if (err.code === "23503") {
     response.status(404).send({ message: "Review Not Found" });
   } else response.status(500).send({ message: "Internal Server Error" });
