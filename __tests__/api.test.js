@@ -231,7 +231,7 @@ describe("GET /api/reviews QUERIES", () => {
   });
 });
 
-describe("/api/reviews/:review_id", () => {
+describe("GET /api/reviews/:review_id", () => {
   test("GET /api/reviews/:review_id responds with status 200", () => {
     return request(app).get("/api/reviews/1").expect(200);
   });
@@ -297,224 +297,6 @@ describe("/api/reviews/:review_id", () => {
     return request(app)
       .get("/api/reviews/30000")
       .expect(404)
-      .then((result) => {
-        expect(result.body.message).toBe("Review Not Found");
-      });
-  });
-});
-
-describe("GET /api/reviews/:review_id/comments", () => {
-  test("GET request responds with status 200 and an array of comment objects", () => {
-    return request(app)
-      .get("/api/reviews/3/comments")
-      .expect(200)
-      .then((result) => {
-        expect(Array.isArray(result.body)).toBe(true);
-        expect(result.body.length).toBe(3);
-      });
-  });
-  test("GET request responds with array of comment objects with the required properties", () => {
-    return request(app)
-      .get("/api/reviews/2/comments")
-      .expect(200)
-      .then((result) => {
-        result.body.forEach((comment) => {
-          expect(comment).toHaveProperty("comment_id");
-          expect(comment).toHaveProperty("votes");
-          expect(comment).toHaveProperty("created_at");
-          expect(comment).toHaveProperty("author");
-          expect(comment).toHaveProperty("body");
-          expect(comment).toHaveProperty("review_id");
-        });
-      });
-  });
-  test("GET request responds with an array of comment objects with properties which are of the correct data type", () => {
-    return request(app)
-      .get("/api/reviews/2/comments")
-      .expect(200)
-      .then((result) => {
-        result.body.forEach((comment) => {
-          expect(typeof comment.comment_id).toBe("number");
-          expect(typeof comment.votes).toBe("number");
-          expect(typeof comment.created_at).toBe("string");
-          expect(typeof comment.author).toBe("string");
-          expect(typeof comment.body).toBe("string");
-          expect(typeof comment.review_id).toBe("number");
-        });
-      });
-  });
-  test("GET request responds with array of all comment objects sorted most recent comment first as default", () => {
-    return request(app)
-      .get("/api/reviews/2/comments")
-      .expect(200)
-      .then((result) => {
-        expect(result.body).toBeSortedBy("created_at", { descending: true });
-      });
-  });
-  test("GET request responds with status 404 and error message if route does not exist", () => {
-    return request(app)
-      .get("/api/reviews/3/commenters")
-      .expect(404)
-      .then((result) => {
-        expect(result.body.message).toBe("Path Not Found");
-      });
-  });
-  test("GET request responds with status 404 and error message if review_id is valid but does not exist", () => {
-    return request(app)
-      .get("/api/reviews/3000000/comments")
-      .expect(404)
-      .then((result) => {
-        expect(result.body.message).toBe("Path Not Found");
-      });
-  });
-  test("GET request responds with status 404 and error message if no comments exist on that review ID", () => {
-    return request(app)
-      .get("/api/reviews/1/comments")
-      .expect(404)
-      .then((result) => {
-        expect(result.body.message).toBe("Path Not Found");
-      });
-  });
-  test("GET request responds with status 400 and error message if review_id is invalid", () => {
-    return request(app)
-      .get("/api/reviews/nonsense/comments")
-      .expect(400)
-      .then((result) => {
-        expect(result.body.message).toBe("Bad Request");
-      });
-  });
-});
-
-describe("GET /api/users", () => {
-  test("GET /api/users responds with status 200 and an array of user objects", () => {
-    return request(app)
-      .get("/api/users")
-      .expect(200)
-      .then((result) => {
-        expect(Array.isArray(result.body)).toBe(true);
-        expect(result.body.length).toBe(4);
-      });
-  });
-  test("GET /api/users responds with an array of user objects with the required properties", () => {
-    return request(app)
-      .get("/api/users")
-      .expect(200)
-      .then((result) => {
-        result.body.forEach((user) => {
-          expect(user).toHaveProperty("username");
-          expect(user).toHaveProperty("name");
-          expect(user).toHaveProperty("avatar_url");
-        });
-      });
-  });
-  test("GET /api/users responds with an array of review objects with properties which are of the correct data type", () => {
-    return request(app)
-      .get("/api/users")
-      .expect(200)
-      .then((result) => {
-        result.body.forEach((review) => {
-          expect(typeof review.username).toBe("string");
-          expect(typeof review.name).toBe("string");
-          expect(typeof review.avatar_url).toBe("string");
-        });
-      });
-  });
-  test("GET /api/users responds with status 404 and error message if endpoint is incorrect", () => {
-    return request(app)
-      .get("/api/usersssa")
-      .expect(404)
-      .then((result) => {
-        expect(result.body.message).toBe("Path Not Found");
-      });
-  });
-});
-
-describe("POST /api/reviews/:review_id/comments", () => {
-  test("POST /api/reviews/1/comments accepts an object with properties of usename and body and responds with status 201 and a response body of the posted comment", () => {
-    return request(app)
-      .post("/api/reviews/1/comments")
-      .expect(201)
-      .send({
-        username: "bainesface",
-        body: "Great game for dogs like me",
-      })
-      .then((response) => {
-        expect(response.body.review_id).toBe(1);
-        expect(response.body.author).toBe("bainesface");
-        expect(response.body.body).toBe("Great game for dogs like me");
-      });
-  });
-  test("POST /api/reviews/1/comments accepts an object with properties of usename, body and extra properties and responds with status 201 and a response body of the posted comment, ignoring extra properties", () => {
-    return request(app)
-      .post("/api/reviews/2/comments")
-      .expect(201)
-      .send({
-        username: "bainesface",
-        extraPropOne: "I have made an extra property",
-        body: "Great game for dogs like me",
-        extraPropTwo: "I have made another extra property",
-      })
-      .then((response) => {
-        expect(response.body.review_id).toBe(2);
-        expect(response.body.author).toBe("bainesface");
-        expect(response.body.body).toBe("Great game for dogs like me");
-        expect(response.body).not.toHaveProperty("extraPropOne");
-        expect(response.body).not.toHaveProperty("extraPropTwo");
-      });
-  });
-  test("POST /api/reviews/1/comments responds with status 400 and error message when comment is missing both required fields", () => {
-    return request(app)
-      .post("/api/reviews/1/comments")
-      .expect(400)
-      .send({})
-      .then((response) => {
-        expect(response.body.message).toBe(
-          "Bad Request - Missing Required Fields"
-        );
-      });
-  });
-  test("POST /api/reviews/1/comments responds with status 400 and error message when comment is missing one of the required fields", () => {
-    return request(app)
-      .post("/api/reviews/1/comments")
-      .expect(400)
-      .send({ username: "bainesface" })
-      .then((response) => {
-        expect(response.body.message).toBe(
-          "Bad Request - Missing Required Fields"
-        );
-      });
-  });
-  test("POST /api/reviews/1/comments responds with status 400 and error message when comment has both required fields but one is an empty string", () => {
-    return request(app)
-      .post("/api/reviews/1/comments")
-      .expect(400)
-      .send({ username: "", body: "I have left my name blank" })
-      .then((response) => {
-        expect(response.body.message).toBe(
-          "Bad Request - Missing Required Fields"
-        );
-      });
-  });
-  test("POST /api/reviews/review_id/comments responds with status 400 and error message if endpoint is an invalid review id", () => {
-    return request(app)
-      .post("/api/reviews/nonsense/comments")
-      .expect(400)
-      .send({
-        username: "bainesface",
-        body: "Great game for dogs like me",
-      })
-      .then((result) => {
-        expect(result.body.message).toBe("Bad Request");
-      });
-  });
-  test("POST /api/reviews/:review_id/comments responds with status 404 and error message if endpoint is a valid but non-existent review id", () => {
-    return request(app)
-      .post("/api/reviews/30000/comments")
-      .expect(404)
-      .send({
-        username: "bainesface",
-        body: "Great game for dogs like me",
-      })
       .then((result) => {
         expect(result.body.message).toBe("Review Not Found");
       });
@@ -648,6 +430,224 @@ describe("PATCH /api/reviews/:review_id", () => {
       })
       .then((result) => {
         expect(result.body.message).toBe("Review Not Found");
+      });
+  });
+});
+
+describe("GET /api/reviews/:review_id/comments", () => {
+  test("GET request responds with status 200 and an array of comment objects", () => {
+    return request(app)
+      .get("/api/reviews/3/comments")
+      .expect(200)
+      .then((result) => {
+        expect(Array.isArray(result.body)).toBe(true);
+        expect(result.body.length).toBe(3);
+      });
+  });
+  test("GET request responds with array of comment objects with the required properties", () => {
+    return request(app)
+      .get("/api/reviews/2/comments")
+      .expect(200)
+      .then((result) => {
+        result.body.forEach((comment) => {
+          expect(comment).toHaveProperty("comment_id");
+          expect(comment).toHaveProperty("votes");
+          expect(comment).toHaveProperty("created_at");
+          expect(comment).toHaveProperty("author");
+          expect(comment).toHaveProperty("body");
+          expect(comment).toHaveProperty("review_id");
+        });
+      });
+  });
+  test("GET request responds with an array of comment objects with properties which are of the correct data type", () => {
+    return request(app)
+      .get("/api/reviews/2/comments")
+      .expect(200)
+      .then((result) => {
+        result.body.forEach((comment) => {
+          expect(typeof comment.comment_id).toBe("number");
+          expect(typeof comment.votes).toBe("number");
+          expect(typeof comment.created_at).toBe("string");
+          expect(typeof comment.author).toBe("string");
+          expect(typeof comment.body).toBe("string");
+          expect(typeof comment.review_id).toBe("number");
+        });
+      });
+  });
+  test("GET request responds with array of all comment objects sorted most recent comment first as default", () => {
+    return request(app)
+      .get("/api/reviews/2/comments")
+      .expect(200)
+      .then((result) => {
+        expect(result.body).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  test("GET request responds with status 404 and error message if route does not exist", () => {
+    return request(app)
+      .get("/api/reviews/3/commenters")
+      .expect(404)
+      .then((result) => {
+        expect(result.body.message).toBe("Path Not Found");
+      });
+  });
+  test("GET request responds with status 404 and error message if review_id is valid but does not exist", () => {
+    return request(app)
+      .get("/api/reviews/3000000/comments")
+      .expect(404)
+      .then((result) => {
+        expect(result.body.message).toBe("Path Not Found");
+      });
+  });
+  test("GET request responds with status 404 and error message if no comments exist on that review ID", () => {
+    return request(app)
+      .get("/api/reviews/1/comments")
+      .expect(404)
+      .then((result) => {
+        expect(result.body.message).toBe("Path Not Found");
+      });
+  });
+  test("GET request responds with status 400 and error message if review_id is invalid", () => {
+    return request(app)
+      .get("/api/reviews/nonsense/comments")
+      .expect(400)
+      .then((result) => {
+        expect(result.body.message).toBe("Bad Request");
+      });
+  });
+});
+
+describe("POST /api/reviews/:review_id/comments", () => {
+  test("POST /api/reviews/1/comments accepts an object with properties of usename and body and responds with status 201 and a response body of the posted comment", () => {
+    return request(app)
+      .post("/api/reviews/1/comments")
+      .expect(201)
+      .send({
+        username: "bainesface",
+        body: "Great game for dogs like me",
+      })
+      .then((response) => {
+        expect(response.body.review_id).toBe(1);
+        expect(response.body.author).toBe("bainesface");
+        expect(response.body.body).toBe("Great game for dogs like me");
+      });
+  });
+  test("POST /api/reviews/1/comments accepts an object with properties of usename, body and extra properties and responds with status 201 and a response body of the posted comment, ignoring extra properties", () => {
+    return request(app)
+      .post("/api/reviews/2/comments")
+      .expect(201)
+      .send({
+        username: "bainesface",
+        extraPropOne: "I have made an extra property",
+        body: "Great game for dogs like me",
+        extraPropTwo: "I have made another extra property",
+      })
+      .then((response) => {
+        expect(response.body.review_id).toBe(2);
+        expect(response.body.author).toBe("bainesface");
+        expect(response.body.body).toBe("Great game for dogs like me");
+        expect(response.body).not.toHaveProperty("extraPropOne");
+        expect(response.body).not.toHaveProperty("extraPropTwo");
+      });
+  });
+  test("POST /api/reviews/1/comments responds with status 400 and error message when comment is missing both required fields", () => {
+    return request(app)
+      .post("/api/reviews/1/comments")
+      .expect(400)
+      .send({})
+      .then((response) => {
+        expect(response.body.message).toBe(
+          "Bad Request - Missing Required Fields"
+        );
+      });
+  });
+  test("POST /api/reviews/1/comments responds with status 400 and error message when comment is missing one of the required fields", () => {
+    return request(app)
+      .post("/api/reviews/1/comments")
+      .expect(400)
+      .send({ username: "bainesface" })
+      .then((response) => {
+        expect(response.body.message).toBe(
+          "Bad Request - Missing Required Fields"
+        );
+      });
+  });
+  test("POST /api/reviews/1/comments responds with status 400 and error message when comment has both required fields but one is an empty string", () => {
+    return request(app)
+      .post("/api/reviews/1/comments")
+      .expect(400)
+      .send({ username: "", body: "I have left my name blank" })
+      .then((response) => {
+        expect(response.body.message).toBe(
+          "Bad Request - Missing Required Fields"
+        );
+      });
+  });
+  test("POST /api/reviews/review_id/comments responds with status 400 and error message if endpoint is an invalid review id", () => {
+    return request(app)
+      .post("/api/reviews/nonsense/comments")
+      .expect(400)
+      .send({
+        username: "bainesface",
+        body: "Great game for dogs like me",
+      })
+      .then((result) => {
+        expect(result.body.message).toBe("Bad Request");
+      });
+  });
+  test("POST /api/reviews/:review_id/comments responds with status 404 and error message if endpoint is a valid but non-existent review id", () => {
+    return request(app)
+      .post("/api/reviews/30000/comments")
+      .expect(404)
+      .send({
+        username: "bainesface",
+        body: "Great game for dogs like me",
+      })
+      .then((result) => {
+        expect(result.body.message).toBe("Review Not Found");
+      });
+  });
+});
+
+describe("GET /api/users", () => {
+  test("GET /api/users responds with status 200 and an array of user objects", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then((result) => {
+        expect(Array.isArray(result.body)).toBe(true);
+        expect(result.body.length).toBe(4);
+      });
+  });
+  test("GET /api/users responds with an array of user objects with the required properties", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then((result) => {
+        result.body.forEach((user) => {
+          expect(user).toHaveProperty("username");
+          expect(user).toHaveProperty("name");
+          expect(user).toHaveProperty("avatar_url");
+        });
+      });
+  });
+  test("GET /api/users responds with an array of review objects with properties which are of the correct data type", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then((result) => {
+        result.body.forEach((review) => {
+          expect(typeof review.username).toBe("string");
+          expect(typeof review.name).toBe("string");
+          expect(typeof review.avatar_url).toBe("string");
+        });
+      });
+  });
+  test("GET /api/users responds with status 404 and error message if endpoint is incorrect", () => {
+    return request(app)
+      .get("/api/usersssa")
+      .expect(404)
+      .then((result) => {
+        expect(result.body.message).toBe("Path Not Found");
       });
   });
 });
