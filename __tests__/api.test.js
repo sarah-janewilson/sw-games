@@ -219,8 +219,8 @@ describe("GET /api/reviews QUERIES", () => {
       .expect(404)
       .then((result) => {
         expect(result.body.message).toBe("Category Not Found");
-        });
       });
+  });
   test("GET /api/reviews responds with status 404 and an empty array when passed a category which is not valid", () => {
     return request(app)
       .get("/api/reviews?category=nonsense")

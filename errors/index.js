@@ -12,6 +12,6 @@ exports.handlePsqlErrors = (err, request, response, next) => {
   } else next(err);
 };
 
-exports.handleServerErrors = (err, request, response, next) => {
+exports.handleServerErrors = (err, request, response) => {
   response.status(500).send({ message: "Internal Server Error" });
 };

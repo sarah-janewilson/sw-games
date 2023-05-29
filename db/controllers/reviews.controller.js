@@ -1,8 +1,11 @@
-const { fetchReviews, patchVotesByReviewId } = require("../models/reviews.model");
+const {
+  fetchReviews,
+  patchVotesByReviewId,
+} = require("../models/reviews.model");
 const { fetchReviewById } = require("../models/reviews.model");
 
 exports.getAllReviews = (request, response, next) => {
-  const { category, sort_by, order } = request.query
+  const { category, sort_by, order } = request.query;
   fetchReviews(category, sort_by, order)
     .then((reviews) => {
       if (category && reviews.length === 0) {

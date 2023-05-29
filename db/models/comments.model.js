@@ -1,5 +1,4 @@
 const db = require("../../db/connection");
-const { getReviewById } = require("../controllers/reviews.controller");
 
 exports.fetchCommentsByReviewId = (fetchedComments) => {
   return db
@@ -20,7 +19,7 @@ exports.createComment = (username, body, reviewId) => {
     .query(
       `INSERT INTO comments (review_id, author, body)
       VALUES ($1, $2, $3)
-      RETURNING*;`,
+      RETURNING *;`,
       [reviewId, username, body]
     )
     .then((response) => {
