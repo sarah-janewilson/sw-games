@@ -1,6 +1,6 @@
+const cors = require('cors');
 const express = require("express");
 const app = express();
-app.use(express.json());
 
 const {
   handleCustomErrors,
@@ -20,6 +20,9 @@ const {
   deleteCommentById,
 } = require("./db/controllers/comments.controller");
 const { getAllUsers } = require("./db/controllers/users.controller.js");
+
+app.use(cors());
+app.use(express.json());
 
 app.get("/api/categories", getAllCategories);
 app.get("/api", readMeFunc);
